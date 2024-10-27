@@ -1,12 +1,14 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
   documentSelectedEvent = new EventEmitter<Document>();
+  documentChangedEvent = new EventEmitter<Document[]>();
   documents: Document[] = [];
 
   constructor() {
@@ -17,12 +19,20 @@ export class DocumentService {
     return this.documents.slice(); 
   }
 
-  getDocument(id: string): Document | null {
-    for (let document of this.documents) {
-      if (document.id === id) {
-        return document; 
-      }
-    }
-    return null; 
+  getDocument(id: string): Observable<Document | null> {
+    const document = this.documents.find(doc => doc.id === id) || null; 
+    return of(document); 
   }
+
+  deleteDocument(document: Document) {
+    if (!document) {
+       return;
+    }
+    const pos = this.documents.indexOf(document);
+    if (pos < 0) {
+       return;
+    }
+    this.documents.splice(pos, 1);
+    this.documentChangedEvent.emit(this.documents.slice());
+ }
 }

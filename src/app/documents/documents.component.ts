@@ -4,11 +4,12 @@ import { DocumentDetailComponent } from "./document-detail/document-detail.compo
 import { Document } from './document.model';
 import { CommonModule } from '@angular/common';
 import { DocumentService } from './document.service';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'cms-documents',
   standalone: true,
-  imports: [DocumentListComponent, DocumentDetailComponent, CommonModule],
+  imports: [DocumentListComponent, DocumentDetailComponent, CommonModule, RouterOutlet],
   templateUrl: './documents.component.html',
   styleUrl: './documents.component.css'
 })

@@ -1,10 +1,11 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Contact } from '../../models/contact.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'cms-contact-item',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './contact-item.component.html',
   styleUrl: './contact-item.component.css'
 })

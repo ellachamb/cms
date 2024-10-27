@@ -19,11 +19,13 @@ export class MessageItemComponent {
    constructor(private contactService: ContactService) {}
 
    ngOnInit() {
-    const contact: Contact | null = this.contactService.getContact(this.message.sender);
-    if (contact) {
-       this.messageSender = contact.name;
-    } else {
-       this.messageSender = 'Unknown sender';
+      this.contactService.getContact(this.message.sender).subscribe((contact) => {
+        if (contact) {
+          this.messageSender = contact.name; 
+        } else {
+          this.messageSender = 'Unknown sender'; 
+        }
+      });
     }
- }
+    
 }

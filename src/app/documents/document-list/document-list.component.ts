@@ -3,11 +3,12 @@ import { DocumentItemComponent } from "./document-item/document-item.component";
 import { Document } from '../document.model';
 import { CommonModule } from '@angular/common';
 import { DocumentService } from '../document.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'cms-document-list',
   standalone: true,
-  imports: [DocumentItemComponent, CommonModule],
+  imports: [DocumentItemComponent, CommonModule, RouterModule],
   templateUrl: './document-list.component.html',
   styleUrl: './document-list.component.css'
 })
@@ -18,10 +19,10 @@ export class DocumentListComponent {
   constructor(private documentService: DocumentService) { }
 
   ngOnInit() {
-    this.documents = this.documentService.getDocuments();
+    this.documents = this.documentService.getDocuments(); 
+    this.documentService.documentChangedEvent.subscribe((documents: Document[]) => {
+      this.documents = documents; 
+    });
   }
-
-  onSelectedDocument(document: Document) {
-    this.documentService.documentSelectedEvent.emit(document);
-  }
+  
 }
