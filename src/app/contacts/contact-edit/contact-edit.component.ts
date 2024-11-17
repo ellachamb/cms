@@ -5,6 +5,7 @@ import { Contact } from '../models/contact.model';
 import { ContactService } from '../contact.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { ContactItemComponent } from "../contact-list/contact-item/contact-item.component";
+import { DragDropModule } from '@angular/cdk/drag-drop'
 
 @Component({
   selector: 'cms-contact-edit',

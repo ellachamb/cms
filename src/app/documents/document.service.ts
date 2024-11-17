@@ -1,85 +1,100 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Document } from './document.model';
-import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 import { Observable, of, Subject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DocumentService {
   documentListChangedEvent = new Subject<Document[]>();
   documentSelectedEvent = new EventEmitter<Document>();
   documentChangedEvent = new EventEmitter<Document[]>();
   documents: Document[] = [];
-  maxDocumentId: number; 
-  constructor() {
-    this.documents = MOCKDOCUMENTS;
-    this.maxDocumentId = this.getMaxId(); 
+  maxDocumentId: number = 0;
+
+  constructor(private http: HttpClient) {
+    console.log('DocumentService initialized');
   }
 
-  getDocuments(): Document[] {
-    return this.documents.slice(); 
+  getDocuments(): void {
+    const url = 'https://cms-project-aaaf0-default-rtdb.firebaseio.com/cms.json';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    this.http.get<Document[]>(url, { headers })
+      .subscribe(
+        (documents: Document[] | null) => {
+          this.documents = documents || [];  
+          this.maxDocumentId = this.getMaxId(); 
+          this.documents.sort((a, b) => a.name.localeCompare(b.name)); 
+          this.documentListChangedEvent.next(this.documents.slice());  
+        },
+        (error: any) => {
+          console.error('Failed to fetch documents:', error);
+        }
+      );
   }
 
   getDocument(id: string): Observable<Document | null> {
-    const document = this.documents.find(doc => doc.id === id) || null; 
+    const document = this.documents.find(doc => doc.id === id) || null;
     return of(document); 
   }
 
   addDocument(newDocument: Document) {
     if (!newDocument) {
-        return;
+      return;
     }
 
-    this.maxDocumentId++;
-    newDocument.id = this.maxDocumentId.toString(); 
+    this.maxDocumentId++; 
+    newDocument.id = this.maxDocumentId.toString();  
     this.documents.push(newDocument); 
-    const documentsListClone = this.documents.slice(); 
+    const documentsListClone = this.documents.slice();  
     this.documentListChangedEvent.next(documentsListClone); 
-}
+  }
 
-updateDocument(originalDocument: Document, newDocument: Document) {
+  updateDocument(originalDocument: Document, newDocument: Document) {
     if (!originalDocument || !newDocument) {
-        return;
+      return;
     }
 
-    const pos = this.documents.indexOf(originalDocument);
+    const pos = this.documents.indexOf(originalDocument);  
     if (pos < 0) {
-        return;
+      return;
     }
 
-    newDocument.id = originalDocument.id;
-    this.documents[pos] = newDocument; 
-    const documentsListClone = this.documents.slice(); 
-    this.documentListChangedEvent.next(documentsListClone); 
-}
+    newDocument.id = originalDocument.id;  
+    this.documents[pos] = newDocument;  
+    const documentsListClone = this.documents.slice();  
+    this.documentListChangedEvent.next(documentsListClone);  
+  }
 
   deleteDocument(document: Document) {
     if (!document) {
       return;
     }
 
-    const pos = this.documents.indexOf(document);
+    const pos = this.documents.indexOf(document);  
     if (pos < 0) {
       return;
     }
 
-    this.documents.splice(pos, 1);
-    const documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(documentsListClone);
+    this.documents.splice(pos, 1);  
+    const documentsListClone = this.documents.slice();  
+    this.documentListChangedEvent.next(documentsListClone);  
   }
 
   getMaxId(): number {
     let maxId = 0;
 
     for (const document of this.documents) {
-      const currentId = parseInt(document.id, 10); // Convert document.id to a number
+      const currentId = parseInt(document.id, 10);  
       if (currentId > maxId) {
-        maxId = currentId;
+        maxId = currentId;  
       }
     }
 
     return maxId;
   }
 }
-

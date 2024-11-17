@@ -4,11 +4,11 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common'; 
 import { DocumentService } from '../document.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'cms-document-edit',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, HttpClientModule],
   templateUrl: './document-edit.component.html',
   styleUrl: './document-edit.component.css'
 })

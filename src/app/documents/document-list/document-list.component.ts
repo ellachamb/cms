@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { DocumentService } from '../document.service';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'cms-document-list',
   standalone: true,
-  imports: [DocumentItemComponent, CommonModule, RouterModule],
+  imports: [DocumentItemComponent, CommonModule, RouterModule, HttpClientModule],
   templateUrl: './document-list.component.html',
   styleUrl: './document-list.component.css'
 })
@@ -20,14 +21,14 @@ export class DocumentListComponent implements OnInit, OnDestroy {
   constructor(private documentService: DocumentService) { }
 
   ngOnInit() {
-    this.documents = this.documentService.getDocuments();
-  
+    this.documentService.getDocuments();
     this.subscription = this.documentService.documentListChangedEvent.subscribe(
       (documentsList: Document[]) => {
         this.documents = documentsList;
       }
     );
   }
+  
   
   
   ngOnDestroy() {
