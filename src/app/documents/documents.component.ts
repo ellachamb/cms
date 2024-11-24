@@ -5,7 +5,7 @@ import { Document } from './document.model';
 import { CommonModule } from '@angular/common';
 import { DocumentService } from './document.service';
 import { RouterOutlet } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'cms-documents',
@@ -17,18 +17,19 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     RouterOutlet,
     HttpClientModule,
   ],
+  providers: [DocumentService],
   templateUrl: './documents.component.html',
-  styleUrl: './documents.component.css'
+  styleUrls: ['./documents.component.css']
 })
 export class DocumentsComponent {
- selectedDocument!: Document;
+  selectedDocument!: Document;
 
- constructor(private documentService: DocumentService) { }
+  constructor(private documentService: DocumentService) { }
 
   ngOnInit() {
     this.documentService.documentSelectedEvent.subscribe(
-      (contact: Document) => {
-        this.selectedDocument = contact;
+      (document: Document) => {
+        this.selectedDocument = document;
       }
     );
   }

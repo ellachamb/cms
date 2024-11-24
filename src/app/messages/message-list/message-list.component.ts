@@ -4,11 +4,13 @@ import { MessageEditComponent } from "../message-edit/message-edit.component";
 import { Message } from "../message.model";
 import { CommonModule } from '@angular/common';
 import { MessageService } from '../message.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'cms-message-list',
   standalone: true,
-  imports: [CommonModule, MessageItemComponent, MessageEditComponent],
+  imports: [CommonModule, MessageItemComponent, MessageEditComponent, HttpClientModule],
+  providers: [MessageService],
   templateUrl: './message-list.component.html',
   styleUrl: './message-list.component.css'
 })
@@ -18,7 +20,7 @@ export class MessageListComponent implements OnInit {
   constructor(private messageService: MessageService) { }
 
   ngOnInit() {
-    this.messages = this.messageService.getMessages();
+    this.messageService.getMessages();
     this.messageService.messageChangedEvent.subscribe(
       (messages: Message[]) => {
         this.messages = messages;

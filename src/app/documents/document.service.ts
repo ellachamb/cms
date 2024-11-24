@@ -17,26 +17,48 @@ export class DocumentService {
     console.log('DocumentService initialized');
   }
 
-  getDocuments(): void {
-    const url = 'https://cms-project-aaaf0-default-rtdb.firebaseio.com/cms.json';
+  storeDocuments(): void {
+    const url = 'https://cms-project-aaaf0-default-rtdb.firebaseio.com/documents.json';
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
 
+    const documentsString = JSON.stringify(this.documents);
+
+    this.http.put(url, documentsString, { headers })
+      .subscribe(
+        () => {
+          console.log('Documents successfully stored!');
+          this.documentListChangedEvent.next(this.documents.slice());
+        },
+        (error: any) => {
+          console.error('Failed to store documents:', error);
+        }
+      );
+}
+
+  getDocuments(): void {
+    const url = 'https://cms-project-aaaf0-default-rtdb.firebaseio.com/documents.json';
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+  
     this.http.get<Document[]>(url, { headers })
       .subscribe(
         (documents: Document[] | null) => {
+          console.log('Data from Firebase:', documents); 
+  
           this.documents = documents || [];  
           this.maxDocumentId = this.getMaxId(); 
           this.documents.sort((a, b) => a.name.localeCompare(b.name)); 
           this.documentListChangedEvent.next(this.documents.slice());  
         },
         (error: any) => {
-          console.error('Failed to fetch documents:', error);
+          console.error('Failed to fetch documents:', error); 
         }
       );
   }
-
+  
   getDocument(id: string): Observable<Document | null> {
     const document = this.documents.find(doc => doc.id === id) || null;
     return of(document); 
@@ -50,8 +72,9 @@ export class DocumentService {
     this.maxDocumentId++; 
     newDocument.id = this.maxDocumentId.toString();  
     this.documents.push(newDocument); 
-    const documentsListClone = this.documents.slice();  
-    this.documentListChangedEvent.next(documentsListClone); 
+    // const documentsListClone = this.documents.slice();  
+    // this.documentListChangedEvent.next(documentsListClone); 
+    this.storeDocuments();
   }
 
   updateDocument(originalDocument: Document, newDocument: Document) {
@@ -66,8 +89,9 @@ export class DocumentService {
 
     newDocument.id = originalDocument.id;  
     this.documents[pos] = newDocument;  
-    const documentsListClone = this.documents.slice();  
-    this.documentListChangedEvent.next(documentsListClone);  
+    // const documentsListClone = this.documents.slice();  
+    // this.documentListChangedEvent.next(documentsListClone);  
+    this.storeDocuments();
   }
 
   deleteDocument(document: Document) {
@@ -81,8 +105,9 @@ export class DocumentService {
     }
 
     this.documents.splice(pos, 1);  
-    const documentsListClone = this.documents.slice();  
-    this.documentListChangedEvent.next(documentsListClone);  
+    // const documentsListClone = this.documents.slice();  
+    // this.documentListChangedEvent.next(documentsListClone);  
+    this.storeDocuments();
   }
 
   getMaxId(): number {
